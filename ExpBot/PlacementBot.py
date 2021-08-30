@@ -111,15 +111,7 @@ class Bot:
 
         inRange = checkInRangeOfNode(PlacementNode.PlacementNode(xPos, yPos), potentialLinks, self.map.radius)
 
-        linkCopy = link.copy()
-
-        for fNode in inRange:           # TODO: Something here is fucked idk why
-            for sNode in linkCopy:
-                if fNode == sNode:
-                    linkCopy.remove(sNode)
-                    inRange.remove(sNode)
-
-        if len(linkCopy) == len(inRange):
+        if len(link) == len(inRange):
             return 0
         else:
             return node
