@@ -1,6 +1,3 @@
-import math
-
-import PlacementNode
 
 import math
 
@@ -145,13 +142,15 @@ def convertToPlacements(sortedNodes):
     placements = []
 
     for nodes in sortedNodes:
-        xPos = 0
-        yPos = 0
+        xPos = 0.0
+        yPos = 0.0
         for node in nodes:
             xPos += node.pos[0]
             yPos += node.pos[1]
         xPos = xPos / len(nodes)
         yPos = yPos / len(nodes)
+        xPos = round(xPos, 3)
+        yPos = round(yPos, 3)
         placements.append(PlacementNode.PlacementNode(xPos, yPos))
 
     return placements
