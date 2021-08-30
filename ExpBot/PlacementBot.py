@@ -70,21 +70,31 @@ class Bot:
         unsortedMultiples = [placeOptions[0]]
 
         for pair in placeOptions[1:]:
-
-            duplicate = 0
+            placed = 0
             for link in unsortedMultiples:
-                if duplicate == 2:
-                    break
+
                 duplicate = 0
                 for node in link:
-                    duplicate += 1
+                    if node == pair[0]:
+                        duplicate += 1
+                    elif node == pair[1]:
+                        duplicate += 1
 
-            if duplicate != 2:
-                for link in unsortedMultiples:
+                if duplicate != 2:
                     for node in link:
-                        
-
-
+                        placeable = 0
+                        if node == pair[0]:
+                            placeable = self.returnIfPlacable(pair[1], link)
+                        elif node == pair[1]:
+                            placeable = self.returnIfPlacable(pair[0], link)
+                        if placeable:
+                            placed = 1
+                            unsortedMultiples[unsortedMultiples.index(link)].append(placeable)
+                            break
+                else:
+                    placed = 1
+            if not placed:
+                unsortedMultiples.append(pair)
 
         return unsortedMultiples
 
