@@ -69,29 +69,22 @@ class Bot:
     def checkMultiple(self, placeOptions):
         unsortedMultiples = [placeOptions[0]]
 
-        for pair in placeOptions[1:]:               # TODO: Really poorly coded, mby redo
-            size = 0
-            for fLink in unsortedMultiples:
-                if size != len(pair):
-                    size = 0
-                for fNode in fLink:
-                    if fNode == pair[0]:
-                        size += 1
-                    elif fNode == pair[1]:
-                        size += 1
+        for pair in placeOptions[1:]:
 
-            if size != len(pair):
+            duplicate = 0
+            for link in unsortedMultiples:
+                if duplicate == 2:
+                    break
+                duplicate = 0
+                for node in link:
+                    duplicate += 1
+
+            if duplicate != 2:
                 for link in unsortedMultiples:
                     for node in link:
-                        placable = 0
-                        if node == pair[0]:
-                            placable = self.returnIfPlacable(pair[1], link)
-                        elif node == pair[1]:
-                            placable = self.returnIfPlacable(pair[0], link)
-                        if placable:
-                            unsortedMultiples[unsortedMultiples.index(link)].append(placable)
-                        else:
-                            unsortedMultiples.append(pair)
+                        
+
+
 
         return unsortedMultiples
 
