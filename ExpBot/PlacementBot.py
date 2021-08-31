@@ -15,7 +15,6 @@ class Bot:
 
     def __init__(self, m):
         self.map = m
-        self.oldScale = self.map.scale
         self.unclaimedNodes = self.map.nodes
         self.placeableNodesLeft = self.map.maxPlacementNodes
         self.lastNode = PlacementNode.PlacementNode(self.map.start[0], self.map.start[1])
@@ -27,9 +26,9 @@ class Bot:
             if len(placementOptions) == 0:
                 self.oldScale += 1
             else:
-                if self.oldScale != self.map.scale:
+                if self.oldScale != 0:
                     self.placeMiddleNodes(placementOptions[0])
-                    self.oldScale = self.map.scale
+                    self.oldScale = 0
                 self.placeNode(placementOptions[0])
 
     def placeNode(self, placementNode):
