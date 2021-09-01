@@ -4,8 +4,8 @@ import PlacementNode
 
 class Map:
     totalNodes = 0
-    nodes = []              # coordinates of nodes
-    placements = []         # coordinates of placed nodes
+    nodes: [Node] = []              # coordinates of nodes
+    placements: [PlacementNode] = []         # coordinates of placed nodes
 
     start = [0, 0]          # where the placement nodes need to start
     scale = 0               # distance between placements

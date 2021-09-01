@@ -48,7 +48,7 @@ class Bot:
         if not self.placeableNodesLeft:
             return 0    # didnt place node
 
-        self.map.placements.append(placementNode)
+        self.map.placements.append(placementNode)   # TODO: make func in map
         self.lastNode = placementNode
         self.placeableNodesLeft -= 1
 
