@@ -23,44 +23,56 @@ class Bot:
 
         while len(self.unclaimedNodes) > 0 and self.placeableNodesLeft > 0:
             placementOptions = self.checkBestPlace()
+
             if len(placementOptions) == 0:
                 self.oldScale += 1
             else:
-                if self.oldScale != 0:
-                    self.placeMiddleNodes(placementOptions[0])
-                    self.oldScale = 0
                 self.placeNode(placementOptions[0])
 
+    def checkBestPlace(self):
+
+        self.nodesInRange = checkInRangeOfNode(
+            self.lastNode, self.unclaimedNodes, self.map.scale+self.oldScale)
+        allNodesInRange = self.nodesInRange
+        if len(allNodesInRange) > 1:
+            placeOptions = self.checkDistBetweenNodesInRange(self.lastNode, self.unclaimedNodes)
+            return convertToPlacements(sortBest(self.checkMultiple(placeOptions)))
+        elif len(allNodesInRange) == 1:
+            if self.oldScale > 0:
+                self.oldScale -= 1
+            return [self.furthestOutOneNode(self.lastNode, allNodesInRange[0])]
+        else:
+            return []
+
     def placeNode(self, placementNode):
+        if not self.placeableNodesLeft:
+            return 0    # didnt place node
+
         self.map.placements.append(placementNode)
         self.lastNode = placementNode
         self.placeableNodesLeft -= 1
 
         for node in self.unclaimedNodes:
-            if distance(self.map.placements[len(self.map.placements) - 1], node) < self.map.radius:
+            if distance(self.map.placements[len(self.map.placements) - 1], node) <= self.map.radius:
                 self.unclaimedNodes.pop(self.unclaimedNodes.index(node))
+        return 1    # placed node
 
-    def placeMiddleNodes(self, placementNode):
-        amount = self.oldScale - self.map.scale
+    def furthestOutOneNode(self, starNode, finnishNode):
 
-        for currentNode in range(1, amount + 1):
-            x = ((placementNode.pos[0] - self.lastNode.pos[0]) / amount) * currentNode
-            y = ((placementNode.pos[1] - self.lastNode.pos[1]) / amount) * currentNode
-            self.placeNode(PlacementNode.PlacementNode(x, y))
+        opposite = finnishNode.pos[0] - starNode.pos[0]
+        adjacent = finnishNode.pos[1] - starNode.pos[1]
 
-    def checkBestPlace(self):
-        placeOptions = self.checkDistBetweenNodes(self.lastNode, self.unclaimedNodes)
+        if not opposite or not adjacent:
+            angle = 0
+        else:
+            angle = math.atan(opposite / adjacent)
 
-        if len(placeOptions) == 0:
-            return self.nodesInRange
+        x = starNode.pos[0] + math.sin(angle) * self.map.scale
+        y = starNode.pos[1] + math.cos(angle) * self.map.scale
+        x = round(x, 4)
+        y = round(y, 4)
 
-        if len(placeOptions) > 1:
-            placeOptions = self.checkMultiple(placeOptions)
-
-        if len(placeOptions) > 1:
-            placeOptions = sortBest(placeOptions)
-
-        return convertToPlacements(placeOptions)
+        return PlacementNode.PlacementNode(x, y)
 
     def checkMultiple(self, placeOptions):
         unsortedMultiples = [placeOptions[0]]
@@ -117,7 +129,7 @@ class Bot:
 
     # Goes through every node that is in range and checks the distance to all the other nodes
     # This is to check the best place to place a node to reach as many nodes as possible
-    def checkDistBetweenNodes(self, lastNode, unclaimedNodes):
+    def checkDistBetweenNodesInRange(self, lastNode, unclaimedNodes):
         self.nodesInRange = checkInRangeOfNode(lastNode, unclaimedNodes, self.oldScale + self.map.radius)
         placeOptions = []
         # n = len(nodesInRange) * (len(nodesInRange) - 1) / 2
@@ -148,8 +160,8 @@ def convertToPlacements(sortedNodes):
             yPos += node.pos[1]
         xPos = xPos / len(nodes)
         yPos = yPos / len(nodes)
-        xPos = round(xPos, 3)
-        yPos = round(yPos, 3)
+        xPos = round(xPos, 4)
+        yPos = round(yPos, 4)
         placements.append(PlacementNode.PlacementNode(xPos, yPos))
 
     return placements
